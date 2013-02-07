@@ -174,6 +174,47 @@ abstract class LibRDF_Node
             throw new LibRDF_Error("Unknown query results type");
         }
     }
+
+    /**
+     * Return the ARC2 internal node type to help construct ARC2
+     * triple structure.
+     *
+     * @return  string  the internal node type
+     * @access  public
+     */
+    public function getArc2TypeName()
+    {
+      //TODO : 'var' ??
+      if(librdf_node_is_resource($this->node)) {
+	$type = 'uri';
+      } elseif (librdf_node_is_literal($this->node)) {
+	$type = 'literal';
+      } elseif (librdf_node_is_blank($this->node)) {
+	$type = 'bnode';
+      }
+      return $type;
+    }
+
+    /**
+     * Return the most basic string representation to help construct
+     * ARC2 triple structure.
+     *
+     * @return  string  the string representation
+     * @access  public
+     */
+    public function getPlainString()
+    {
+      if(librdf_node_is_resource($this->node)) {
+	$output = $this->__toString();
+	$output = substr($output, 1, strlen($output) - 2);
+      } elseif (librdf_node_is_literal($this->node)) {
+	$this->setPlainOutput(true);
+	$output = $this->__toString();
+      } elseif (librdf_node_is_blank($this->node)) {
+	$output = $this->__toString();
+      }
+      return $output;
+    }
 }
 
 /**

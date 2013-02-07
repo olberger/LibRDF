@@ -222,5 +222,63 @@ class LibRDF_Statement
         return ((boolean) librdf_statement_equals($this->statement,
             $statement->getStatement()));
     }
+
+    /**
+     * Return the ARC2 internal triple structure for this statement.
+     *
+     * Excerpt from https://github.com/semsol/arc2/wiki/Internal-Structures
+     *  A single triple array can contain the following keys:
+     *    s the subject value (a URI, Bnode ID, or Variable)
+     *    p the property URI (or a Variable)
+     *    o the subject value (a URI, Bnode ID, Literal, or Variable)
+     *    s_type "uri", "bnode", or "var"
+     *    o_type "uri", "bnode", "literal", or "var"
+     *    o_datatype a datatype URI
+     *    o_lang a language identifier, e.g. ("en-us")
+     *
+     * @return  array the ARC2 internal triple format
+     * @access  public
+     */
+    public function toArc2Triple()
+    {
+	$s = $this->getSubject();
+	$s_type = $s->getArc2TypeName();
+	$sv = $s->getPlainString();
+
+	$p = $this->getPredicate();
+        $pv = $p->getPlainString();
+
+        $o = $this->getObject();
+	$o_type = $o->getArc2TypeName();
+        $ov = $o->getPlainString();
+
+	$o_datatype = false;
+	if($o_type == 'literal') {
+	  $o_datatype = $o->getDataType();
+	}
+	
+	$o_lang = false;
+	if($o_type == 'literal') {
+	  $o_lang = $o->getLanguage();
+	}
+
+      	$triple = array(
+           's' => $sv,
+           'p' => $pv,
+           'o' => $ov,
+           's_type' => $s_type,
+           'o_type' => $o_type
+        );
+
+	if($o_datatype) {
+	  $triple['o_datatype'] = $o_datatype;
+	}
+
+	if($o_lang) {
+	  $triple['o_lang'] = $o_lang;
+	}
+
+	return $triple;
+    }
 }
 ?>
