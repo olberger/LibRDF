@@ -787,6 +787,23 @@ class LibRDF_Model implements Iterator
         $tail = $this->getTarget($head, $rdfRest);
         return array_merge($lst, $this->getListAsArray($tail));
     }
+
+    /**
+     * Return the ARC2 internal triples array for this model.
+     *
+     * @return  array     the ARC2 internal triples representation
+     * @access  public
+     */
+    public function toArc2Triples() 
+    {
+      $triples = array();
+
+      foreach ($this as $statement) {
+	$triples[] = $statement->toArc2Triple();
+      }
+      return $triples;
+    }
+
 }
 
 ?>
